@@ -1,5 +1,6 @@
 package no.okobank.transaksjoner
 
+import no.okobank.transaksjoner.service.hentCSV
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
@@ -7,5 +8,8 @@ import org.springframework.boot.runApplication
 class TransaksjonerApplication
 
 fun main(args: Array<String>) {
-	runApplication<TransaksjonerApplication>(*args)
+    runApplication<TransaksjonerApplication>(*args)
+    println("Leser csv:")
+    hentCSV()
+    println("Ferdig")
 }
