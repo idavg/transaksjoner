@@ -5,35 +5,35 @@ import java.time.ZonedDateTime
 import java.util.UUID
 
 data class KorttransaksjonCsv(
-    val referanse: UUID,
-    val kortnummer: Long,
-    val korttype: String, // TODO: Burde det være enum?
-    val dato: ZonedDateTime,
-    val organisasjonsnummer: String,
-    val belop_ore: Int,
-    val transaksjonsstatus: Transaksjonsstatus,
+  val referanse: UUID,
+  val kortnummer: Long,
+  val korttype: String, // TODO: Burde det være enum?
+  val dato: ZonedDateTime,
+  val organisasjonsnummer: String,
+  val belop_ore: Int,
+  val transaksjonsstatus: Transaksjonsstatus,
 ) {
-    enum class Transaksjonsstatus(
-        val value: String,
-    ) {
-        GODKJENT("GODKJENT"),
-        AVVIST("AVVIST"),
-        VENTENDE("VENTENDE"),
-    }
+  enum class Transaksjonsstatus(
+    val value: String,
+  ) {
+    GODKJENT("GODKJENT"),
+    AVVIST("AVVIST"),
+    VENTENDE("VENTENDE"),
+  }
 
-    companion object {
-        fun fraCsv(kolonner: List<String>) =
-            KorttransaksjonCsv(
-                referanse = UUID.randomUUID(),
-                kortnummer = kolonner[1].toLong(),
-                korttype = kolonner[2],
-                dato =
-                    ZonedDateTime
-                        .parse(kolonner[3])
-                        .withZoneSameInstant(ZoneId.of("Europe/Oslo")),
-                organisasjonsnummer = kolonner[4],
-                belop_ore = kolonner[5].toInt(),
-                transaksjonsstatus = Transaksjonsstatus.valueOf(kolonner[6]),
-            )
-    }
+  companion object {
+    fun fraCsv(kolonner: List<String>) =
+      KorttransaksjonCsv(
+        referanse = UUID.fromString(kolonner[0]),
+        kortnummer = kolonner[1].toLong(),
+        korttype = kolonner[2],
+        dato =
+          ZonedDateTime
+            .parse(kolonner[3])
+            .withZoneSameInstant(ZoneId.of("Europe/Oslo")),
+        organisasjonsnummer = kolonner[4],
+        belop_ore = kolonner[5].toInt(),
+        transaksjonsstatus = Transaksjonsstatus.valueOf(kolonner[6]),
+      )
+  }
 }
