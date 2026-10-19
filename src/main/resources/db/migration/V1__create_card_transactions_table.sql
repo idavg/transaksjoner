@@ -14,4 +14,4 @@ CREATE TABLE korttransaksjon
     belop_ore               int                         NOT NULL,
     transaksjonsstatus      varchar                     NOT NULL,
     organisasjonsNavn       varchar                     NOT NULL
-)
+);
