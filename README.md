@@ -27,8 +27,8 @@ Før du starter, må du ha følgende installert:
 ### 1. Klon prosjektet
 
 ```bash
-git clone <repository-url>
-cd <prosjektnavn>
+git clone https://github.com/idavg/transaksjoner.git
+cd transaksjoner
 ```
 
 ### 2. Start PostgreSQL
