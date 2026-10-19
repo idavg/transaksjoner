@@ -1,5 +1,6 @@
 package no.okobank.transaksjoner.repository
 
+import no.okobank.transaksjoner.enums.Transaksjonsstatus
 import no.okobank.transaksjoner.model.Korttransaksjon
 import org.slf4j.LoggerFactory
 import org.springframework.jdbc.core.JdbcTemplate
@@ -7,6 +8,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Repository
 import java.sql.Types
+import java.time.ZonedDateTime
+import java.util.UUID
 
 @Repository
 class KorttransaksjonRepository(
@@ -14,8 +17,9 @@ class KorttransaksjonRepository(
 ) {
   private val logger = LoggerFactory.getLogger(KorttransaksjonRepository::class.java)
 
+  val namedParameterJdbcTemplate = NamedParameterJdbcTemplate(jdbcTemplate)
+
   fun opprettTransaksjon(korttransaksjon: Korttransaksjon): Boolean {
-    val namedParameterJdbcTemplate = NamedParameterJdbcTemplate(jdbcTemplate)
     val sql =
       """
       INSERT INTO korttransaksjon (
@@ -59,6 +63,57 @@ class KorttransaksjonRepository(
     } catch (e: Exception) {
       logger.error("Feil ved lagring av korttransaksjon")
       throw e
+    }
+  }
+
+  fun hentKorttransaksjoner(
+    status: Transaksjonsstatus?,
+    fraDato: ZonedDateTime?,
+    tilDato: ZonedDateTime?,
+  ): List<Korttransaksjon> {
+    val where = mutableListOf<String>()
+    val params = mutableMapOf<String, Any?>()
+
+    if (status != null) {
+      where += "transaksjonsstatus = :status"
+      params["status"] = status.name
+    }
+
+    if (fraDato != null) {
+      where += "dato >= :fraDato"
+      params["fraDato"] = fraDato.toOffsetDateTime()
+    }
+
+    if (tilDato != null) {
+      where += "dato <= :tilDato"
+      params["tilDato"] = tilDato.toOffsetDateTime()
+    }
+    val sql =
+      buildString {
+        append("SELECT * FROM korttransaksjon")
+        if (where.isNotEmpty()) {
+          append(" WHERE ")
+          append(where.joinToString(" AND "))
+        }
+      }
+
+    return namedParameterJdbcTemplate.query(sql, params) { rs, _ ->
+      Korttransaksjon.fraResultSet(rs)
+    }
+  }
+
+  fun hentKorttransaksjonPaaReferanse(referanse: UUID): List<Korttransaksjon> {
+    val sql =
+      """
+      SELECT * FROM korttransaksjon
+      WHERE referanse = :referanse
+      """.trimIndent()
+
+    return namedParameterJdbcTemplate.query(
+      sql,
+      mapOf("referanse" to referanse),
+    ) { rs, _ ->
+      Korttransaksjon.fraResultSet(rs)
     }
   }
 }
