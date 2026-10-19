@@ -1,5 +1,6 @@
 package no.okobank.transaksjoner.model
 
+import no.okobank.transaksjoner.enums.Transaksjonsstatus
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.UUID
@@ -7,20 +8,12 @@ import java.util.UUID
 data class KorttransaksjonCsv(
   val referanse: UUID,
   val kortnummer: Long,
-  val korttype: String, // TODO: Burde det være enum?
+  val korttype: String,
   val dato: ZonedDateTime,
   val organisasjonsnummer: String,
   val belop_ore: Int,
   val transaksjonsstatus: Transaksjonsstatus,
 ) {
-  enum class Transaksjonsstatus(
-    val value: String,
-  ) {
-    GODKJENT("GODKJENT"),
-    AVVIST("AVVIST"),
-    VENTENDE("VENTENDE"),
-  }
-
   companion object {
     fun fraCsv(kolonner: List<String>) =
       KorttransaksjonCsv(
