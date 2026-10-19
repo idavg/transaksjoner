@@ -1,0 +1,95 @@
+{
+  "info": {
+    "name": "Økobank",
+    "description": null,
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Transaksjoner",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "tilDato",
+            "value": "2026-10-19T23:59:59+02:00",
+            "description": "",
+            "disabled": true,
+            "type": "default"
+          },
+          {
+            "key": "fraDato",
+            "value": "2026-10-01T00:00:00+02:00",
+            "description": "",
+            "disabled": true,
+            "type": "default"
+          },
+          {
+            "key": "transaksjonsstatus",
+            "value": "GODKJENT",
+            "description": "",
+            "disabled": true,
+            "type": "default"
+          }
+        ],
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8080/api/korttransaksjoner",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "korttransaksjoner"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "Transaksjon",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8080/api/8c3c2074-4f4d-46cc-bb3d-1f14ae451683",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "8c3c2074-4f4d-46cc-bb3d-1f14ae451683"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "OppsummertTransaksjoner",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8080/api/oppsummering",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "oppsummering"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    }
+  ],
+  "variable": []
+}
