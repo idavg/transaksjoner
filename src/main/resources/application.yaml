@@ -1,3 +1,7 @@
 spring:
   application:
     name: transaksjoner
+  datasource:
+    url: jdbc:postgresql://localhost:5432/korttransaksjonerdb
+    username: postgres
+    password: postgres

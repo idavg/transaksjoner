@@ -4,7 +4,7 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.UUID
 
-data class TransaksjonerDTO(
+data class KorttransaksjonCsv(
     val referanse: UUID,
     val kortnummer: Long,
     val korttype: String, // TODO: Burde det være enum?
@@ -23,7 +23,7 @@ data class TransaksjonerDTO(
 
     companion object {
         fun fraCsv(kolonner: List<String>) =
-            TransaksjonerDTO(
+            KorttransaksjonCsv(
                 referanse = UUID.randomUUID(),
                 kortnummer = kolonner[1].toLong(),
                 korttype = kolonner[2],
