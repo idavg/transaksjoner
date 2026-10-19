@@ -1,6 +1,6 @@
 package no.okobank.transaksjoner.client
 
-import no.okobank.transaksjoner.model.OrganisasjonDTO
+import no.okobank.transaksjoner.data.OrganisasjonDTO
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -31,7 +31,6 @@ class BronnoysundClient(
       .uri("/enhetsregisteret/api/enheter/$organisasjonsnummer")
       .retrieve()
       .bodyToMono<OrganisasjonDTO>()
-      .onErrorResume { ex ->
-        Mono.empty()
-      }.block()
+      .onErrorResume { Mono.empty() }
+      .block()
 }

@@ -1,4 +1,4 @@
-package no.okobank.transaksjoner.model
+package no.okobank.transaksjoner.data
 
 import no.okobank.transaksjoner.enums.Transaksjonsstatus
 import java.time.ZoneId
@@ -11,7 +11,7 @@ data class KorttransaksjonCsv(
   val korttype: String,
   val dato: ZonedDateTime,
   val organisasjonsnummer: String,
-  val belop_ore: Int,
+  val belop_ore: Double,
   val transaksjonsstatus: Transaksjonsstatus,
 ) {
   companion object {
@@ -25,7 +25,7 @@ data class KorttransaksjonCsv(
             .parse(kolonner[3])
             .withZoneSameInstant(ZoneId.of("Europe/Oslo")),
         organisasjonsnummer = kolonner[4],
-        belop_ore = kolonner[5].toInt(),
+        belop_ore = kolonner[5].toDouble(),
         transaksjonsstatus = Transaksjonsstatus.valueOf(kolonner[6]),
       )
   }

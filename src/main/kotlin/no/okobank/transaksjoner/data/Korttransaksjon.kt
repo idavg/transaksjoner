@@ -1,4 +1,4 @@
-package no.okobank.transaksjoner.model
+package no.okobank.transaksjoner.data
 
 import no.okobank.transaksjoner.enums.Transaksjonsstatus
 import java.sql.ResultSet
@@ -12,7 +12,7 @@ data class Korttransaksjon(
   val korttype: String,
   val dato: ZonedDateTime,
   val organisasjonsnummer: String,
-  val belop_ore: Int,
+  val belop_kr: Double,
   val transaksjonsstatus: Transaksjonsstatus,
   val organisasjonsnavn: String,
 ) {
@@ -27,7 +27,7 @@ data class Korttransaksjon(
             .getObject("dato", OffsetDateTime::class.java)
             .toZonedDateTime(),
         organisasjonsnummer = rs.getString("organisasjonsnummer"),
-        belop_ore = rs.getInt("belop_ore"),
+        belop_kr = rs.getDouble("belop_ore") / 100,
         transaksjonsstatus =
           Transaksjonsstatus.valueOf(
             rs.getString("transaksjonsstatus"),

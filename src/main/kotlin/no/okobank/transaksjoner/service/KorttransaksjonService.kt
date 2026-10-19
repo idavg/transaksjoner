@@ -1,7 +1,9 @@
 package no.okobank.transaksjoner.service
 
+import no.okobank.transaksjoner.data.Korttransaksjon
+import no.okobank.transaksjoner.data.OrganisasjonsOppsummering
+import no.okobank.transaksjoner.data.TransaksjonOppsummering
 import no.okobank.transaksjoner.enums.Transaksjonsstatus
-import no.okobank.transaksjoner.model.Korttransaksjon
 import no.okobank.transaksjoner.repository.KorttransaksjonRepository
 import org.springframework.stereotype.Service
 import java.time.ZonedDateTime
@@ -19,4 +21,28 @@ class KorttransaksjonService(
 
   fun hentTransaksjon(referanse: UUID): List<Korttransaksjon> =
     korttransaksjonRepository.hentKorttransaksjonPaaReferanse(referanse)
+
+  fun hentOppsummertData(): TransaksjonOppsummering {
+    val organisasjonsnumre =
+      korttransaksjonRepository.hentAlleOrganisasjonsnumre()
+
+    val organisasjoner =
+      organisasjonsnumre.map { orgnr ->
+        val belop =
+          korttransaksjonRepository.hentTotalBelopPerOrganisasjon(orgnr)
+
+        val antallPerStatus =
+          korttransaksjonRepository.hentAntallPerStatusPerOrganisasjon(orgnr)
+
+        OrganisasjonsOppsummering(
+          organisasjonsnummer = orgnr,
+          totalBelop = (belop.firstOrNull()?.totalBelopOre ?: 0L).toDouble() / 100,
+          antallPerStatus = antallPerStatus,
+        )
+      }
+
+    return TransaksjonOppsummering(
+      organisasjoner = organisasjoner,
+    )
+  }
 }

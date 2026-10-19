@@ -1,7 +1,8 @@
 package no.okobank.transaksjoner.repository
 
+import no.okobank.transaksjoner.data.Korttransaksjon
+import no.okobank.transaksjoner.data.OrganisasjonsBelop
 import no.okobank.transaksjoner.enums.Transaksjonsstatus
-import no.okobank.transaksjoner.model.Korttransaksjon
 import org.slf4j.LoggerFactory
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
@@ -13,7 +14,7 @@ import java.util.UUID
 
 @Repository
 class KorttransaksjonRepository(
-  private val jdbcTemplate: JdbcTemplate,
+  jdbcTemplate: JdbcTemplate,
 ) {
   private val logger = LoggerFactory.getLogger(KorttransaksjonRepository::class.java)
 
@@ -53,7 +54,7 @@ class KorttransaksjonRepository(
           korttransaksjon.dato.toOffsetDateTime(),
           Types.TIMESTAMP_WITH_TIMEZONE,
         ).addValue("organisasjonsnummer", korttransaksjon.organisasjonsnummer)
-        .addValue("belop_ore", korttransaksjon.belop_ore)
+        .addValue("belop_ore", korttransaksjon.belop_kr)
         .addValue("transaksjonsstatus", korttransaksjon.transaksjonsstatus.name)
         .addValue("organisasjonsnavn", korttransaksjon.organisasjonsnavn)
 
@@ -67,9 +68,9 @@ class KorttransaksjonRepository(
   }
 
   fun hentKorttransaksjoner(
-    status: Transaksjonsstatus?,
-    fraDato: ZonedDateTime?,
-    tilDato: ZonedDateTime?,
+    status: Transaksjonsstatus? = null,
+    fraDato: ZonedDateTime? = null,
+    tilDato: ZonedDateTime? = null,
   ): List<Korttransaksjon> {
     val where = mutableListOf<String>()
     val params = mutableMapOf<String, Any?>()
@@ -114,6 +115,71 @@ class KorttransaksjonRepository(
       mapOf("referanse" to referanse),
     ) { rs, _ ->
       Korttransaksjon.fraResultSet(rs)
+    }
+  }
+
+  fun hentTotalBelopPerOrganisasjon(organisasjonsnummer: String): List<OrganisasjonsBelop> {
+    val sql =
+      """
+      SELECT
+          organisasjonsnummer,
+          SUM(belop_ore) AS total_belop_ore
+      FROM korttransaksjon
+      WHERE organisasjonsnummer = :organisasjonsnummer
+      GROUP BY organisasjonsnummer
+      """.trimIndent()
+
+    return namedParameterJdbcTemplate.query(
+      sql,
+      mapOf("organisasjonsnummer" to organisasjonsnummer),
+    ) { rs, _ ->
+      OrganisasjonsBelop(
+        organisasjonsnummer = rs.getString("organisasjonsnummer"),
+        totalBelopOre = rs.getLong("total_belop_ore"),
+      )
+    }
+  }
+
+  fun hentAntallPerStatusPerOrganisasjon(organisasjonsnummer: String): Map<Transaksjonsstatus, Long> {
+    val sql =
+      """
+      SELECT
+          transaksjonsstatus,
+          COUNT(*) AS antall
+      FROM korttransaksjon
+      WHERE organisasjonsnummer = :organisasjonsnummer
+      GROUP BY transaksjonsstatus
+      """.trimIndent()
+
+    val resultat =
+      namedParameterJdbcTemplate
+        .query(
+          sql,
+          mapOf("organisasjonsnummer" to organisasjonsnummer),
+        ) { rs, _ ->
+          Transaksjonsstatus.valueOf(
+            rs.getString("transaksjonsstatus"),
+          ) to rs.getLong("antall")
+        }.toMap()
+
+    return Transaksjonsstatus.entries.associateWith { status ->
+      resultat[status] ?: 0L
+    }
+  }
+
+  fun hentAlleOrganisasjonsnumre(): List<String> {
+    val sql =
+      """
+      SELECT DISTINCT organisasjonsnummer
+      FROM korttransaksjon
+      ORDER BY organisasjonsnummer
+      """.trimIndent()
+
+    return namedParameterJdbcTemplate.query(
+      sql,
+      emptyMap<String, Any>(),
+    ) { rs, _ ->
+      rs.getString("organisasjonsnummer")
     }
   }
 }

@@ -1,4 +1,4 @@
-package no.okobank.transaksjoner.model
+package no.okobank.transaksjoner.data
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 

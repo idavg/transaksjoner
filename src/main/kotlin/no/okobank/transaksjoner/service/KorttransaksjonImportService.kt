@@ -1,8 +1,8 @@
 package no.okobank.transaksjoner.service
 
 import no.okobank.transaksjoner.client.BronnoysundClient
-import no.okobank.transaksjoner.model.Korttransaksjon
-import no.okobank.transaksjoner.model.KorttransaksjonCsv
+import no.okobank.transaksjoner.data.Korttransaksjon
+import no.okobank.transaksjoner.data.KorttransaksjonCsv
 import no.okobank.transaksjoner.repository.KorttransaksjonRepository
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.event.ApplicationReadyEvent
@@ -49,7 +49,7 @@ class KorttransaksjonImportService(
         korttype = transaksjon.korttype,
         dato = transaksjon.dato,
         organisasjonsnummer = transaksjon.organisasjonsnummer,
-        belop_ore = transaksjon.belop_ore,
+        belop_kr = transaksjon.belop_ore,
         transaksjonsstatus = transaksjon.transaksjonsstatus,
         organisasjonsnavn =
           organisasjonsnavn[transaksjon.organisasjonsnummer]?.navn ?: "Ukjent orgnr".also {
