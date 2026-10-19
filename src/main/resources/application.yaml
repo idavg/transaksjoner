@@ -5,3 +5,13 @@ spring:
     url: jdbc:postgresql://localhost:5432/korttransaksjonerdb
     username: postgres
     password: postgres
+  flyway:
+    enable: true
+
+logging:
+  level:
+    org:
+      flywaydb: debug
+
+bronnoysund:
+  baseUrl: "https://data.ppe.brreg.no"
