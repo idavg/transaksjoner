@@ -9,5 +9,5 @@ import org.springframework.scheduling.annotation.EnableScheduling
 class TransaksjonerApplication
 
 fun main(args: Array<String>) {
-    runApplication<TransaksjonerApplication>(*args)
+  runApplication<TransaksjonerApplication>(*args)
 }

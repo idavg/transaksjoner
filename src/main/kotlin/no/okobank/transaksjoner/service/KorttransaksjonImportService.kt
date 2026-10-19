@@ -4,6 +4,7 @@ import no.okobank.transaksjoner.client.BronnoysundClient
 import no.okobank.transaksjoner.model.Korttransaksjon
 import no.okobank.transaksjoner.model.KorttransaksjonCsv
 import no.okobank.transaksjoner.repository.KorttransaksjonRepository
+import org.slf4j.LoggerFactory
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.scheduling.annotation.Scheduled
@@ -15,6 +16,8 @@ class KorttransaksjonImportService(
   private val korttransaksjonRepository: KorttransaksjonRepository,
   private val bronnoysundClient: BronnoysundClient,
 ) {
+  private val logger = LoggerFactory.getLogger(KorttransaksjonImportService::class.java)
+
   // @Scheduled(cron = "0 0 3 * * *", zone = "Europe/Oslo")
   @EventListener(ApplicationReadyEvent::class)
   @Scheduled(cron = "0 * * * * *", zone = "Europe/Oslo")
@@ -25,9 +28,12 @@ class KorttransaksjonImportService(
   fun lesCsvOgLagre() {
     val dagensTransaksjoner = importerCsv()
     val berikedeTransaksjoner = berikTransaksjoner(dagensTransaksjoner)
-    berikedeTransaksjoner.forEach { berikede ->
-      korttransaksjonRepository.opprettTransaksjon(berikede)
-    }
+    val antallLagret =
+      berikedeTransaksjoner.count { berikede ->
+        korttransaksjonRepository.opprettTransaksjon(berikede)
+      }
+
+    logger.info("Antall nye transaksjoner lagret: $antallLagret")
   }
 
   fun berikTransaksjoner(dagensTransaksjoner: List<KorttransaksjonCsv>): List<Korttransaksjon> {
@@ -36,7 +42,6 @@ class KorttransaksjonImportService(
         .map { it.organisasjonsnummer }
         .distinct()
         .associateWith { bronnoysundClient.hentOrganisasjonsNavn(it) }
-    println(organisasjonsnavn)
     return dagensTransaksjoner.map { transaksjon ->
       Korttransaksjon(
         referanse = transaksjon.referanse,
@@ -46,7 +51,12 @@ class KorttransaksjonImportService(
         organisasjonsnummer = transaksjon.organisasjonsnummer,
         belop_ore = transaksjon.belop_ore,
         transaksjonsstatus = transaksjon.transaksjonsstatus,
-        organisasjonsnavn = organisasjonsnavn[transaksjon.organisasjonsnummer]?.navn ?: "Ukjent orgnr",
+        organisasjonsnavn =
+          organisasjonsnavn[transaksjon.organisasjonsnummer]?.navn ?: "Ukjent orgnr".also {
+            logger.warn(
+              "Fant ikke organisasjon med orgnr: ${transaksjon.organisasjonsnummer}",
+            )
+          },
       )
     }
   }
