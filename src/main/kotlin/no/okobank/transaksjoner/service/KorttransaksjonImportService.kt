@@ -18,9 +18,8 @@ class KorttransaksjonImportService(
 ) {
   private val logger = LoggerFactory.getLogger(KorttransaksjonImportService::class.java)
 
-  // @Scheduled(cron = "0 0 3 * * *", zone = "Europe/Oslo")
   @EventListener(ApplicationReadyEvent::class)
-  @Scheduled(cron = "0 * * * * *", zone = "Europe/Oslo")
+  @Scheduled(cron = "0 0 3 * * *", zone = "Europe/Oslo")
   fun dagligKorttransaksjonJob() {
     lesCsvOgLagre()
   }
