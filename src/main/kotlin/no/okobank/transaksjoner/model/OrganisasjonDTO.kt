@@ -4,5 +4,5 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class OrganisasjonDTO(
-    val organisasjonsnavn: String,
+  val navn: String,
 )
